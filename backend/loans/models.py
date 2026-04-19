@@ -1,15 +1,37 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from decimal import Decimal
+from datetime import date
+
+
+class User(AbstractUser):
+    """Custom User model extending Django's AbstractUser."""
+    email = models.EmailField(unique=True)
+    age = models.IntegerField(null=True, blank=True)
+    birthday = models.DateField(null=True, blank=True)
+    address = models.TextField(blank=True)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    
+    class Meta:
+        db_table = 'users'
+    
+    def __str__(self):
+        return self.email
 
 
 class Borrower(models.Model):
     """Model representing a borrower in the system."""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='borrower_profile', null=True, blank=True)
     full_name = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
     address = models.TextField()
+    age = models.IntegerField(null=True, blank=True)
+    birthday = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

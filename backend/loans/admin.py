@@ -1,5 +1,16 @@
 from django.contrib import admin
-from .models import Borrower, Loan, Payment
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import Borrower, Loan, Payment, User
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    list_display = ['email', 'first_name', 'last_name', 'is_staff', 'is_active']
+    search_fields = ['email', 'first_name', 'last_name']
+    list_filter = ['is_staff', 'is_active', 'date_joined']
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ('Additional Info', {'fields': ('age', 'birthday', 'address')}),
+    )
 
 
 @admin.register(Borrower)
