@@ -11,6 +11,7 @@ import {
   LoginPage,
   RegisterPage,
   ProfilePage,
+  ActivationPage,
 } from './pages';
 import './index.css';
 
@@ -27,6 +28,10 @@ function AppRoutes() {
       <Route 
         path="/register" 
         element={isAuthenticated ? <Navigate to="/profile" replace /> : <RegisterPage />} 
+      />
+      <Route 
+        path="/activate/:uid/:token" 
+        element={<ActivationPage />} 
       />
 
       {/* Protected routes */}

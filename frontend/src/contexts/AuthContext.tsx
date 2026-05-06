@@ -8,6 +8,8 @@ interface User {
   age?: number;
   birthday?: string;
   address?: string;
+  profile_image?: string;
+  is_active?: boolean;
 }
 
 interface AuthContextType {
@@ -17,7 +19,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  register: (userData: RegisterData | FormData) => Promise<void>;
   logout: () => void;
 }
 
@@ -30,6 +32,7 @@ interface RegisterData {
   age?: number;
   birthday?: string;
   address?: string;
+  profile_image?: File;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -100,14 +103,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: RegisterData) => {
+  const register = async (userData: RegisterData | FormData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/register/', {
+      // Convert to JSON for registration (exclude profile_image)
+      let body: string;
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (userData instanceof FormData) {
+        // Extract FormData values (excluding file) and convert to JSON
+        const jsonData: any = {
+          email: userData.get('email'),
+          first_name: userData.get('first_name'),
+          last_name: userData.get('last_name'),
+          password: userData.get('password'),
+          re_password: userData.get('re_password'),
+        };
+        
+        // Add optional fields if present
+        const age = userData.get('age');
+        if (age) jsonData.age = age;
+        
+        const birthday = userData.get('birthday');
+        if (birthday) jsonData.birthday = birthday;
+        
+        const address = userData.get('address');
+        if (address) jsonData.address = address;
+        
+        body = JSON.stringify(jsonData);
+        // Note: profile_image upload would need a separate endpoint
+      } else {
+        body = JSON.stringify(userData);
+      }
+
+      const response = await fetch('http://localhost:8000/api/auth/register/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
+        headers,
+        body,
       });
 
       if (!response.ok) {
@@ -115,10 +148,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(JSON.stringify(errorData));
       }
 
-      const data = await response.json();
-      
-      // Auto-login after registration
-      await login(userData.email, userData.password);
+      // Registration successful - user needs to activate email
+      // Don't auto-login, user will need to click activation link
     } catch (error) {
       console.error('Registration error:', error);
       throw error;

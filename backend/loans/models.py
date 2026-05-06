@@ -12,9 +12,11 @@ class User(AbstractUser):
     age = models.IntegerField(null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
     address = models.TextField(blank=True)
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    is_active = models.BooleanField(default=False)  # Requires email activation
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
     
     class Meta:
         db_table = 'users'

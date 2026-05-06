@@ -98,7 +98,45 @@ export const ProfilePage: React.FC = () => {
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-8">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+              <div className="flex items-center gap-6">
+                {/* Profile Image */}
+                <div className="flex flex-col items-center">
+                  {user.profile_image ? (
+                    <img
+                      src={user.profile_image}
+                      alt={`${user.first_name} ${user.last_name}`}
+                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-600 shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center border-4 border-blue-600 shadow-lg">
+                      <svg
+                        className="w-16 h-16 text-gray-600"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {user.first_name} {user.last_name}
+                  </h1>
+                  <p className="text-gray-600 mt-1">{user.email}</p>
+                  {user.is_active ? (
+                    <span className="inline-block mt-2 px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-full">
+                      ✓ Activated
+                    </span>
+                  ) : (
+                    <span className="inline-block mt-2 px-3 py-1 text-sm font-semibold text-white bg-yellow-500 rounded-full">
+                      ⏳ Pending Activation
+                    </span>
+                  )}
+                </div>
+              </div>
+
               <Button
                 onClick={handleLogout}
                 variant="secondary"

@@ -11,14 +11,28 @@ export const RegisterPage: React.FC = () => {
     last_name: '',
     password: '',
     password2: '',
-    age: '',
     birthday: '',
     address: '',
+    profile_image: null as File | null,
   });
+  const [imagePreview, setImagePreview] = useState<string>('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  // Calculate age from birthday
+  const calculateAge = (birthdate: string): number | null => {
+    if (!birthdate) return null;
+    const today = new Date();
+    const birth = new Date(birthdate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -26,6 +40,36 @@ export const RegisterPage: React.FC = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        profile_image: file,
+      }));
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,19 +103,35 @@ export const RegisterPage: React.FC = () => {
     }
 
     try {
-      const registrationData = {
+      // Convert FormData to JSON
+      const jsonData: any = {
         email: formData.email,
         first_name: formData.first_name,
         last_name: formData.last_name,
         password: formData.password,
-        password2: formData.password2,
-        ...(formData.age && { age: parseInt(formData.age) }),
-        ...(formData.birthday && { birthday: formData.birthday }),
-        ...(formData.address && { address: formData.address }),
+        re_password: formData.password2,
       };
+      
+      // Calculate and add age from birthday
+      if (formData.birthday) {
+        const age = calculateAge(formData.birthday);
+        if (age !== null && age >= 18) {
+          jsonData.age = age;
+          jsonData.birthday = formData.birthday;
+        } else if (age !== null && age < 18) {
+          setError('You must be at least 18 years old');
+          setLoading(false);
+          return;
+        }
+      }
+      
+      if (formData.address) {
+        jsonData.address = formData.address;
+      }
 
-      await register(registrationData);
-      navigate('/profile');
+      await register(jsonData);
+      // Show activation message instead of redirecting
+      navigate('/login', { state: { message: 'Registration successful! Check your email to activate your account.' } });
     } catch (err: any) {
       const errorMsg = err.message || 'Registration failed';
       try {
@@ -113,6 +173,38 @@ export const RegisterPage: React.FC = () => {
           )}
 
           <div className="space-y-4">
+            {/* Profile Image Upload */}
+            <div>
+              <label htmlFor="profile_image" className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Picture
+              </label>
+              <div className="flex items-center gap-4">
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Profile preview"
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                )}
+                <div className="flex-1">
+                  <input
+                    id="profile_image"
+                    name="profile_image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-50 file:text-blue-700
+                      hover:file:bg-blue-100"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -161,22 +253,8 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1">
-                Age
-              </label>
-              <Input
-                id="age"
-                name="age"
-                type="number"
-                value={formData.age}
-                onChange={handleChange}
-                placeholder="25"
-              />
-            </div>
-
-            <div>
               <label htmlFor="birthday" className="block text-sm font-medium text-gray-700 mb-1">
-                Birthday
+                Birthday *
               </label>
               <Input
                 id="birthday"
@@ -184,7 +262,13 @@ export const RegisterPage: React.FC = () => {
                 type="date"
                 value={formData.birthday}
                 onChange={handleChange}
+                required
               />
+              {formData.birthday && calculateAge(formData.birthday) !== null && (
+                <p className="text-sm text-gray-600 mt-1">
+                  Age: {calculateAge(formData.birthday)} years old
+                </p>
+              )}
             </div>
 
             <div>
@@ -215,6 +299,7 @@ export const RegisterPage: React.FC = () => {
                 placeholder="••••••••"
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
             </div>
 
             <div>

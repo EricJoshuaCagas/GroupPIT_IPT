@@ -21,6 +21,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'djoser',
+    'cloudinary_storage',
+    'cloudinary',
     'loans',
 ]
 
@@ -134,10 +137,55 @@ AUTH_USER_MODEL = 'loans.User'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:3002',
     'http://localhost:5173',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002',
     'http://127.0.0.1:5173',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Email Configuration (Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@loantracker.com')
+
+# Cloudinary Configuration
+try:
+    import cloudinary
+    cloudinary.config(
+        cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+        api_key=config('CLOUDINARY_API_KEY', default=''),
+        api_secret=config('CLOUDINARY_API_SECRET', default='')
+    )
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+except ImportError:
+    # Cloudinary not installed, use default file storage
+    pass
+
+# Djoser Configuration
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'USER_ID_FIELD': 'id',
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SET_PASSWORD_RETYPE': True,
+    'SEND_ACTIVATION_EMAIL': config('SEND_ACTIVATION_EMAIL', default=False, cast=bool),
+    'ACTIVATION_URL': 'http://localhost:3002/activate/{uid}/{token}/',
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}/',
+    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}/',
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'TOKEN_MODEL': None,
+    'SERIALIZERS': {
+        'user_create': 'loans.serializers.CustomUserCreateSerializer',
+        'user': 'loans.serializers.UserSerializer',
+    },
+    'EMAIL': {
+        'activation': 'loans.email.CustomActivationEmail',
+    },
+}

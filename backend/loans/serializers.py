@@ -9,8 +9,51 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model."""
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'age', 'birthday', 'address']
+        fields = ['id', 'email', 'first_name', 'last_name', 'age', 'birthday', 'address', 'profile_image', 'is_active']
+        read_only_fields = ['id', 'is_active']
+
+
+class CustomUserCreateSerializer(serializers.ModelSerializer):
+    """Serializer for user registration with auto-generated username."""
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    re_password = serializers.CharField(write_only=True, required=True)
+    age = serializers.IntegerField(required=False, allow_null=True)
+    birthday = serializers.DateField(required=False, allow_null=True)
+    address = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'password', 're_password', 'age', 'birthday', 'address']
         read_only_fields = ['id']
+
+    def validate(self, data):
+        """Validate passwords match."""
+        if data['password'] != data['re_password']:
+            raise serializers.ValidationError({"re_password": "Passwords don't match."})
+        return data
+
+    def create(self, validated_data):
+        """Create user with auto-generated username."""
+        validated_data.pop('re_password')
+        password = validated_data.pop('password')
+        
+        # Generate unique username from email
+        email = validated_data['email']
+        username = email.split('@')[0]
+        base = username
+        counter = 1
+        
+        while User.objects.filter(username=username).exists():
+            username = f"{base}{counter}"
+            counter += 1
+        
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            **validated_data
+        )
+        return user
 
 
 class RegisterSerializer(serializers.ModelSerializer):
