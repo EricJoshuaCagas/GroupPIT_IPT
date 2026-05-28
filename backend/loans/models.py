@@ -150,3 +150,39 @@ class Payment(models.Model):
         super().save(*args, **kwargs)
         # Update loan status after payment
         self.loan.update_status()
+
+
+class KnowledgeBase(models.Model):
+    """Knowledge base content for chatbot context."""
+    title = models.CharField(max_length=255, blank=True)
+    content_text = models.TextField(blank=True)
+    pdf_file = models.FileField(upload_to='knowledge_base/pdfs/', null=True, blank=True)
+    source_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        db_table = 'knowledge_base'
+
+    def __str__(self):
+        return self.title or f"KnowledgeBase #{self.id}"
+
+
+class ChatMessage(models.Model):
+    """Chat conversation message."""
+    ROLE_CHOICES = [
+        ('user', 'User'),
+        ('assistant', 'Assistant'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_messages')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        db_table = 'chat_messages'
+
+    def __str__(self):
+        return f"{self.role}: {self.message[:40]}"

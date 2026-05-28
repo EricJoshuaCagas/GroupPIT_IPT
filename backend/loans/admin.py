@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Borrower, Loan, Payment, User
+from .models import Borrower, Loan, Payment, User, KnowledgeBase, ChatMessage
 
 
 @admin.register(User)
@@ -34,3 +34,17 @@ class PaymentAdmin(admin.ModelAdmin):
     search_fields = ['loan__id', 'loan__borrower__full_name']
     list_filter = ['payment_method', 'payment_date', 'created_at']
     readonly_fields = ['created_at']
+
+
+@admin.register(KnowledgeBase)
+class KnowledgeBaseAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'source_url', 'created_at']
+    search_fields = ['title', 'content_text', 'source_url']
+    list_filter = ['created_at']
+
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ['id', 'role', 'user', 'created_at']
+    search_fields = ['message', 'user__email']
+    list_filter = ['role', 'created_at']

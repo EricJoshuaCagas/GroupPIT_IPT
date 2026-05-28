@@ -190,3 +190,13 @@ class LoanListSerializer(serializers.ModelSerializer):
     def get_remaining_balance(self, obj):
         """Return remaining balance for the loan."""
         return obj.remaining_balance
+
+
+class ChatRequestSerializer(serializers.Serializer):
+    """Serializer for chat request payload."""
+    message = serializers.CharField(max_length=2000)
+
+
+class ChatResponseSerializer(serializers.Serializer):
+    """Serializer for chat response payload."""
+    response = serializers.CharField()

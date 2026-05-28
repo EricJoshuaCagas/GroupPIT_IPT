@@ -11,6 +11,7 @@ from .views import (
     profile_view,
     update_profile_view,
     logout_view,
+    chat_view,
 )
 
 router = SimpleRouter()
@@ -32,4 +33,5 @@ urlpatterns = [
     path('auth/profile/', profile_view, name='profile'),
     path('auth/profile/update/', update_profile_view, name='update_profile'),
     path('auth/logout/', logout_view, name='logout'),
+    path('v1/chat/', chat_view, name='chat'),
 ]

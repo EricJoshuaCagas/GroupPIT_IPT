@@ -7,4 +7,7 @@ psycopg2-binary==2.9.9
 bcrypt==4.1.1
 djoser==2.2.2
 cloudinary==1.36.0
-django-cloudinary-storage==0.3.10
+django-cloudinary-storage==0.3.0
+requests==2.32.3
+pypdf==4.2.0
+beautifulsoup4==4.12.3

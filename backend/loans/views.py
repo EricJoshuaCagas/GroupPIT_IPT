@@ -8,7 +8,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
-from .models import Borrower, Loan, Payment, User
+import requests
+from bs4 import BeautifulSoup
+from pypdf import PdfReader
+from .models import Borrower, Loan, Payment, User, KnowledgeBase, ChatMessage
 from .serializers import (
     BorrowerSerializer,
     CustomUserCreateSerializer,
@@ -18,6 +21,8 @@ from .serializers import (
     RegisterSerializer,
     CustomTokenObtainPairSerializer,
     UserSerializer,
+    ChatRequestSerializer,
+    ChatResponseSerializer,
 )
 
 
@@ -31,11 +36,12 @@ def register_view(request):
     
     serializer = CustomUserCreateSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save(is_active=False)
+        activation_enabled = settings.DJOSER.get('SEND_ACTIVATION_EMAIL')
+        user = serializer.save(is_active=not activation_enabled)
         print(f"[REGISTER] User created: {user.email} (is_active: {user.is_active})")
         
         # Send activation email if enabled
-        if settings.DJOSER.get('SEND_ACTIVATION_EMAIL'):
+        if activation_enabled:
             print(f"[REGISTER] Attempting to send activation email...")
             try:
                 # Generate activation token
@@ -388,6 +394,114 @@ def update_profile_view(request):
 def logout_view(request):
     """Logout user (client should delete token)."""
     return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+
+
+OLLAMA_URL = 'http://localhost:11434/api/generate'
+OLLAMA_MODEL = 'qwen2.5:0.5b'
+MAX_CONTEXT_CHARS = 8000
+
+
+def _extract_pdf_text(pdf_file) -> str:
+    if not pdf_file:
+        return ''
+    try:
+        pdf_file.open('rb')
+        reader = PdfReader(pdf_file)
+        pages_text = []
+        for page in reader.pages:
+            text = page.extract_text() or ''
+            if text.strip():
+                pages_text.append(text)
+        return '\n'.join(pages_text).strip()
+    except Exception:
+        return ''
+    finally:
+        try:
+            pdf_file.close()
+        except Exception:
+            pass
+
+
+def _fetch_url_text(url: str) -> str:
+    if not url:
+        return ''
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        for tag in soup(['script', 'style', 'noscript']):
+            tag.extract()
+        text = soup.get_text(separator=' ', strip=True)
+        return text
+    except Exception:
+        return ''
+
+
+def _build_knowledge_context() -> str:
+    entries = KnowledgeBase.objects.all()
+    parts = []
+    for entry in entries:
+        if entry.title:
+            parts.append(f"Title: {entry.title}")
+        if entry.content_text:
+            parts.append(entry.content_text)
+        if entry.source_url:
+            url_text = _fetch_url_text(entry.source_url)
+            if url_text:
+                parts.append(f"Source ({entry.source_url}): {url_text}")
+        if entry.pdf_file:
+            pdf_text = _extract_pdf_text(entry.pdf_file)
+            if pdf_text:
+                parts.append(pdf_text)
+
+    context = '\n\n'.join(parts).strip()
+    if not context:
+        return 'No additional knowledge base content available.'
+    return context[:MAX_CONTEXT_CHARS]
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def chat_view(request):
+    """Chatbot endpoint using knowledge base context and Ollama."""
+    serializer = ChatRequestSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    message = serializer.validated_data['message'].strip()
+    if not message:
+        return Response({'detail': 'Message cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = request.user if request.user.is_authenticated else None
+    ChatMessage.objects.create(user=user, role='user', message=message)
+
+    knowledge_context = _build_knowledge_context()
+    prompt = (
+        "You are LoanTracker AI Assistant.\n\n"
+        f"Knowledge:\n{knowledge_context}\n\n"
+        f"User:\n{message}\n\n"
+        "Assistant:"
+    )
+
+    try:
+        ollama_response = requests.post(
+            OLLAMA_URL,
+            json={
+                'model': OLLAMA_MODEL,
+                'prompt': prompt,
+                'stream': False,
+            },
+            timeout=60,
+        )
+        ollama_response.raise_for_status()
+        data = ollama_response.json()
+        ai_text = (data.get('response') or '').strip()
+    except requests.RequestException:
+        return Response({'detail': 'AI service is unavailable.'}, status=status.HTTP_502_BAD_GATEWAY)
+
+    if not ai_text:
+        ai_text = "I'm sorry, I couldn't generate a response right now."
+
+    ChatMessage.objects.create(user=user, role='assistant', message=ai_text)
+    return Response(ChatResponseSerializer({'response': ai_text}).data, status=status.HTTP_200_OK)
 
 
 class BorrowerViewSet(viewsets.ModelViewSet):
