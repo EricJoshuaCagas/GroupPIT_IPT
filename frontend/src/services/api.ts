@@ -97,4 +97,9 @@ export const paymentApi = {
   delete: (id: number) => api.delete(`/payments/${id}/`),
 };
 
+// Chat API
+export const chatApi = {
+  sendMessage: (message: string) => api.post<{ response: string }>('/v1/chat/', { message }),
+};
+
 export default api;

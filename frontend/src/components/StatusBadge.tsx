@@ -7,58 +7,55 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, children }) => {
-  const getStatusConfig = () => {
-    const configs = {
-      active: {
-        bgColor: 'bg-blue-50',
-        textColor: 'text-blue-700',
-        borderColor: 'border-blue-200',
-        icon: '🔵',
-      },
-      completed: {
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-700',
-        borderColor: 'border-green-200',
-        icon: '✓',
-      },
-      overdue: {
-        bgColor: 'bg-red-50',
-        textColor: 'text-red-700',
-        borderColor: 'border-red-200',
-        icon: '⚠️',
-      },
-      success: {
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-700',
-        borderColor: 'border-green-200',
-        icon: '✓',
-      },
-      warning: {
-        bgColor: 'bg-yellow-50',
-        textColor: 'text-yellow-700',
-        borderColor: 'border-yellow-200',
-        icon: '⚠️',
-      },
-      danger: {
-        bgColor: 'bg-red-50',
-        textColor: 'text-red-700',
-        borderColor: 'border-red-200',
-        icon: '✕',
-      },
-    };
-    return configs[status];
+  const configs = {
+    active: {
+      bgColor: 'bg-primary-50',
+      textColor: 'text-primary-700',
+      borderColor: 'border-primary-200',
+      dotColor: 'bg-primary-500',
+    },
+    completed: {
+      bgColor: 'bg-primary-50',
+      textColor: 'text-primary-700',
+      borderColor: 'border-primary-200',
+      dotColor: 'bg-primary-500',
+    },
+    overdue: {
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-700',
+      borderColor: 'border-red-200',
+      dotColor: 'bg-red-500',
+    },
+    success: {
+      bgColor: 'bg-primary-50',
+      textColor: 'text-primary-700',
+      borderColor: 'border-primary-200',
+      dotColor: 'bg-primary-500',
+    },
+    warning: {
+      bgColor: 'bg-slate-100',
+      textColor: 'text-slate-dark',
+      borderColor: 'border-slate-200',
+      dotColor: 'bg-slate-500',
+    },
+    danger: {
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-700',
+      borderColor: 'border-red-200',
+      dotColor: 'bg-red-500',
+    },
   };
 
-  const config = getStatusConfig();
+  const config = configs[status];
 
   return (
     <motion.span
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm border-2 ${config.bgColor} ${config.textColor} ${config.borderColor}`}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${config.bgColor} ${config.textColor} ${config.borderColor}`}
     >
-      <span>{config.icon}</span>
+      <span className={`h-2 w-2 rounded-full ${config.dotColor}`} />
       {children}
     </motion.span>
   );

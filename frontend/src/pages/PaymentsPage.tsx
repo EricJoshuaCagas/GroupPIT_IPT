@@ -26,7 +26,7 @@ export const PaymentsPage: React.FC = () => {
   };
 
   const formatCurrency = (value: string | number) => {
-    return `₱${parseFloat(value as string).toFixed(2)}`;
+    return `PHP ${parseFloat(value as string).toFixed(2)}`;
   };
 
   const getMethodLabel = (method: string) => {
@@ -40,16 +40,15 @@ export const PaymentsPage: React.FC = () => {
   };
 
   const getMethodIcon = (method: string) => {
-    const icons: Record<string, React.ReactNode> = {
-      cash: '💵',
-      check: '🏦',
-      bank_transfer: '💳',
-      credit_card: '💰',
+    const icons: Record<string, string> = {
+      cash: '$',
+      check: 'CHK',
+      bank_transfer: 'BANK',
+      credit_card: 'CARD',
     };
-    return icons[method] || '💴';
+    return icons[method] || 'PAY';
   };
 
-  // Calculate payment statistics
   const totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
   const paymentCount = payments.length;
   const avgPayment = paymentCount > 0 ? totalPayments / paymentCount : 0;
@@ -61,23 +60,22 @@ export const PaymentsPage: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Header */}
-      <motion.div 
+      <motion.div
         className="mb-8"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
       >
-        <motion.h1 
-          className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+        <motion.h1
+          className="gradient-text text-4xl font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           Payments
         </motion.h1>
-        <motion.p 
-          className="text-gray-500 mt-1"
+        <motion.p
+          className="mt-1 text-text-secondary"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.25 }}
@@ -86,9 +84,8 @@ export const PaymentsPage: React.FC = () => {
         </motion.p>
       </motion.div>
 
-      {/* Payment Stats */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+      <motion.div
+        className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.15 }}
@@ -100,12 +97,12 @@ export const PaymentsPage: React.FC = () => {
         >
           <Card>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex items-center justify-center">
-                <DollarSign className="text-green-600" size={24} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary-100 to-primary-50">
+                <DollarSign className="text-primary-600" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Total Payments</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalPayments)}</p>
+                <p className="text-sm text-text-secondary">Total Payments</p>
+                <p className="text-2xl font-bold text-text-primary">{formatCurrency(totalPayments)}</p>
               </div>
             </div>
           </Card>
@@ -118,12 +115,12 @@ export const PaymentsPage: React.FC = () => {
         >
           <Card>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex items-center justify-center">
-                <TrendingUp className="text-blue-600" size={24} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-50">
+                <TrendingUp className="text-slate-dark" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Total Records</p>
-                <p className="text-2xl font-bold text-gray-900">{paymentCount}</p>
+                <p className="text-sm text-text-secondary">Total Records</p>
+                <p className="text-2xl font-bold text-text-primary">{paymentCount}</p>
               </div>
             </div>
           </Card>
@@ -136,19 +133,18 @@ export const PaymentsPage: React.FC = () => {
         >
           <Card>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex items-center justify-center">
-                <Calendar className="text-purple-600" size={24} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary-50 to-slate-100">
+                <Calendar className="text-primary-600" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Average Payment</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(avgPayment)}</p>
+                <p className="text-sm text-text-secondary">Average Payment</p>
+                <p className="text-2xl font-bold text-text-primary">{formatCurrency(avgPayment)}</p>
               </div>
             </div>
           </Card>
         </motion.div>
       </motion.div>
 
-      {/* Payment Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -157,51 +153,44 @@ export const PaymentsPage: React.FC = () => {
         <Card>
           <Table
             columns={[
-              { 
-                key: 'loan', 
+              {
+                key: 'loan',
                 label: 'Loan ID',
                 render: (value) => (
                   <motion.span
-                    className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"
+                    className="inline-block rounded-full bg-primary-100 px-3 py-1 text-sm font-medium text-primary-700"
                     whileHover={{ scale: 1.05 }}
                   >
                     #{value}
                   </motion.span>
-                )
+                ),
               },
               {
                 key: 'amount',
                 label: 'Amount',
-                render: (value) => (
-                  <span className="font-semibold text-green-600">{formatCurrency(value)}</span>
-                ),
+                render: (value) => <span className="font-semibold text-primary-600">{formatCurrency(value)}</span>,
               },
-              { 
-                key: 'payment_date', 
+              {
+                key: 'payment_date',
                 label: 'Date',
-                render: (value) => (
-                  <span className="text-gray-600">{new Date(value).toLocaleDateString()}</span>
-                )
+                render: (value) => <span className="text-text-secondary">{new Date(value).toLocaleDateString()}</span>,
               },
               {
                 key: 'payment_method',
                 label: 'Method',
                 render: (value: string) => (
-                  <motion.div
-                    className="flex items-center gap-2"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span className="text-lg">{getMethodIcon(value)}</span>
-                    <span className="text-gray-600">{getMethodLabel(value)}</span>
+                  <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.03 }}>
+                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-dark">
+                      {getMethodIcon(value)}
+                    </span>
+                    <span className="text-text-secondary">{getMethodLabel(value)}</span>
                   </motion.div>
                 ),
               },
-              { 
-                key: 'notes', 
+              {
+                key: 'notes',
                 label: 'Notes',
-                render: (value) => (
-                  <span className="text-gray-500 text-sm line-clamp-1">{value || '-'}</span>
-                )
+                render: (value) => <span className="line-clamp-1 text-sm text-text-secondary">{value || '-'}</span>,
               },
             ]}
             data={payments}

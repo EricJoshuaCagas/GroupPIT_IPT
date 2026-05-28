@@ -12,7 +12,7 @@ export const Navbar: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
 
   const links = [
-    { path: '/', label: 'Dashboard', icon: BarChart3 },
+    { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
     { path: '/borrowers', label: 'Borrowers', icon: Users },
     { path: '/loans', label: 'Loans', icon: FileText },
     { path: '/payments', label: 'Payments', icon: CreditCard },
@@ -26,85 +26,80 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-xl sticky top-0 z-50 backdrop-blur-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link to="/" className="flex items-center gap-2 font-bold text-2xl hover:opacity-80 transition-opacity">
+    <nav className="sticky top-0 z-50 border-b border-border bg-white/95 shadow-sm backdrop-blur-md">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link
+              to={isAuthenticated ? '/dashboard' : '/'}
+              className="flex items-center gap-3 text-slate-dark transition-opacity hover:opacity-90"
+            >
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                className="rounded-lg bg-primary-500 p-2 text-white"
               >
-                <BarChart3 size={32} />
+                <BarChart3 size={24} />
               </motion.div>
-              <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                LoanTracker
-              </span>
+              <span className="text-2xl font-bold">LoanTracker</span>
             </Link>
           </motion.div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-1">
-            {isAuthenticated && links.map(({ path, label, icon: Icon }) => (
-              <motion.div
-                key={path}
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
-              >
-                <Link
-                  to={path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive(path)
-                      ? 'bg-white bg-opacity-20 font-semibold shadow-lg'
-                      : 'hover:bg-white hover:bg-opacity-10'
-                  }`}
-                >
-                  <Icon size={20} />
-                  <span className="hidden lg:inline">{label}</span>
-                </Link>
-              </motion.div>
-            ))}
+          <div className="hidden items-center gap-2 md:flex">
+            {isAuthenticated &&
+              links.map(({ path, label, icon: Icon }) => (
+                <motion.div key={path} whileHover={{ y: -1 }} whileTap={{ y: 0 }}>
+                  <Link
+                    to={path}
+                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                      isActive(path)
+                        ? 'border-primary-200 bg-primary-50 font-semibold text-primary-600 shadow-sm'
+                        : 'border-transparent text-slate-dark hover:bg-slate-100 hover:text-primary-600'
+                    }`}
+                  >
+                    <Icon size={18} />
+                    <span className="hidden lg:inline">{label}</span>
+                  </Link>
+                </motion.div>
+              ))}
           </div>
 
-          {/* Desktop Right Side - User Menu */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden items-center gap-3 md:flex">
             {isAuthenticated && user ? (
               <div className="relative">
                 <motion.button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-dark transition-colors hover:bg-slate-100"
                 >
-                  <User size={20} />
-                  <span className="hidden lg:inline truncate">{user.first_name} {user.last_name}</span>
+                  <User size={18} />
+                  <span className="hidden max-w-[180px] truncate lg:inline">
+                    {user.first_name} {user.last_name}
+                  </span>
                 </motion.button>
 
-                {/* Profile Dropdown */}
                 <AnimatePresence>
                   {isProfileOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-xl border border-gray-200"
+                      exit={{ opacity: 0, y: -8 }}
+                      className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-border bg-white shadow-lg"
                     >
                       <Link
                         to="/profile"
                         onClick={() => setIsProfileOpen(false)}
-                        className="block px-4 py-3 hover:bg-gray-100 rounded-t-lg transition-colors flex items-center gap-2"
+                        className="flex items-center gap-2 px-4 py-3 text-slate-dark transition-colors hover:bg-slate-50"
                       >
-                        <User size={18} />
+                        <User size={17} />
                         My Profile
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-3 hover:bg-red-50 rounded-b-lg transition-colors flex items-center gap-2 text-red-600 font-medium"
+                        className="flex w-full items-center gap-2 px-4 py-3 text-left font-medium text-red-600 transition-colors hover:bg-red-50"
                       >
-                        <LogOut size={18} />
+                        <LogOut size={17} />
                         Logout
                       </button>
                     </motion.div>
@@ -115,13 +110,13 @@ export const Navbar: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all"
+                  className="rounded-lg px-4 py-2 font-medium text-slate-dark transition-colors hover:bg-slate-100"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all font-medium"
+                  className="rounded-lg bg-primary-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-primary-600"
                 >
                   Sign Up
                 </Link>
@@ -129,57 +124,56 @@ export const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.92 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-white p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
+            className="rounded-lg p-2 text-slate-dark transition-colors hover:bg-slate-100 md:hidden"
           >
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
+            {isOpen ? <X size={26} /> : <Menu size={26} />}
           </motion.button>
         </div>
 
-        {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden pb-4 space-y-2 border-t border-white border-opacity-10"
+              transition={{ duration: 0.25 }}
+              className="space-y-2 border-t border-border pb-4 md:hidden"
             >
-              {isAuthenticated && links.map(({ path, label, icon: Icon }, index) => (
-                <motion.div
-                  key={path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link
-                    to={path}
-                    onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      isActive(path)
-                        ? 'bg-white bg-opacity-20 font-semibold'
-                        : 'hover:bg-white hover:bg-opacity-10'
-                    }`}
+              {isAuthenticated &&
+                links.map(({ path, label, icon: Icon }, index) => (
+                  <motion.div
+                    key={path}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.04 }}
                   >
-                    <Icon size={22} />
-                    {label}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      to={path}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-all ${
+                        isActive(path)
+                          ? 'border-primary-200 bg-primary-50 font-semibold text-primary-600'
+                          : 'border-transparent text-slate-dark hover:bg-slate-100 hover:text-primary-600'
+                      }`}
+                    >
+                      <Icon size={20} />
+                      {label}
+                    </Link>
+                  </motion.div>
+                ))}
 
               {isAuthenticated && user && (
                 <>
-                  <div className="border-t border-white border-opacity-10 my-2"></div>
+                  <div className="my-2 border-t border-border" />
                   <Link
                     to="/profile"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-dark transition-all hover:bg-slate-100"
                   >
-                    <User size={22} />
+                    <User size={20} />
                     My Profile
                   </Link>
                   <button
@@ -187,9 +181,9 @@ export const Navbar: React.FC = () => {
                       handleLogout();
                       setIsOpen(false);
                     }}
-                    className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 transition-all text-red-200 font-medium"
+                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left font-medium text-red-600 transition-all hover:bg-red-50"
                   >
-                    <LogOut size={22} />
+                    <LogOut size={20} />
                     Logout
                   </button>
                 </>
@@ -197,18 +191,18 @@ export const Navbar: React.FC = () => {
 
               {!isAuthenticated && (
                 <>
-                  <div className="border-t border-white border-opacity-10 my-2"></div>
+                  <div className="my-2 border-t border-border" />
                   <Link
                     to="/login"
                     onClick={() => setIsOpen(false)}
-                    className="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all"
+                    className="block rounded-lg px-4 py-3 text-slate-dark transition-all hover:bg-slate-100"
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setIsOpen(false)}
-                    className="block px-4 py-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all font-medium"
+                    className="block rounded-lg bg-primary-500 px-4 py-3 font-semibold text-white transition-colors hover:bg-primary-600"
                   >
                     Sign Up
                   </Link>

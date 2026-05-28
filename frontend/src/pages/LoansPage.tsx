@@ -143,7 +143,7 @@ export const LoansPage: React.FC = () => {
   };
 
   const formatCurrency = (value: string | number) => {
-    return `₱${parseFloat(value as string).toFixed(2)}`;
+    return `PHP ${parseFloat(value as string).toFixed(2)}`;
   };
 
   return (
@@ -153,23 +153,23 @@ export const LoansPage: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <motion.div 
-        className="flex justify-between items-center mb-8"
+      <motion.div
+        className="mb-8 flex items-center justify-between"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
       >
         <div>
-          <motion.h1 
-            className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+          <motion.h1
+            className="gradient-text text-4xl font-bold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             Loans
           </motion.h1>
-          <motion.p 
-            className="text-gray-500 mt-1"
+          <motion.p
+            className="mt-1 text-text-secondary"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.25 }}
@@ -177,10 +177,7 @@ export const LoansPage: React.FC = () => {
             Manage loans and track payments
           </motion.p>
         </div>
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button variant="primary" onClick={() => handleOpenModal()}>
             <Plus size={20} className="mr-2" />
             Create Loan
@@ -223,14 +220,14 @@ export const LoansPage: React.FC = () => {
                 key: 'id',
                 label: 'Actions',
                 render: (_, row) => (
-                  <motion.div 
+                  <motion.div
                     className="flex gap-2"
                     whileHover={{ x: 5 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                   >
                     <motion.button
                       onClick={() => navigate(`/loans/${row.id}`)}
-                      className="text-blue-600 hover:text-blue-700 p-1 rounded-lg hover:bg-blue-50 transition-colors"
+                      className="rounded-lg p-1 text-primary-600 transition-colors hover:bg-primary-50 hover:text-primary-700"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -238,7 +235,7 @@ export const LoansPage: React.FC = () => {
                     </motion.button>
                     <motion.button
                       onClick={() => handleOpenModal(row)}
-                      className="text-amber-600 hover:text-amber-700 p-1 rounded-lg hover:bg-amber-50 transition-colors"
+                      className="rounded-lg p-1 text-slate-dark transition-colors hover:bg-slate-100"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -246,7 +243,7 @@ export const LoansPage: React.FC = () => {
                     </motion.button>
                     <motion.button
                       onClick={() => handleDelete(row.id)}
-                      className="text-red-600 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition-colors"
+                      className="rounded-lg p-1 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -281,9 +278,7 @@ export const LoansPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.05 }}
           >
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Borrower
-            </label>
+            <label className="mb-2 block text-sm font-semibold text-slate-dark">Borrower</label>
             <select
               value={formData.borrower}
               onChange={(e) => setFormData({ ...formData, borrower: e.target.value })}
@@ -297,8 +292,8 @@ export const LoansPage: React.FC = () => {
               ))}
             </select>
             {errors.borrower && (
-              <motion.p 
-                className="text-red-500 text-sm mt-1"
+              <motion.p
+                className="mt-1 text-sm text-red-500"
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
               >

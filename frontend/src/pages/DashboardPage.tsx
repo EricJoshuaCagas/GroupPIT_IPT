@@ -37,7 +37,6 @@ export const DashboardPage: React.FC = () => {
       const loans = loansRes.data.results;
       const payments = paymentsRes.data.results;
 
-      // Calculate total amounts
       const totalPaid = loans.reduce((sum, loan) => sum + parseFloat(loan.total_paid), 0);
       const activeLoanCount = loans.filter((l) => l.status === 'active').length;
 
@@ -45,33 +44,33 @@ export const DashboardPage: React.FC = () => {
         {
           label: 'Total Borrowers',
           value: borrowers.length,
-          icon: <Users size={28} />,
-          color: 'text-blue-600',
-          bgGradient: 'from-blue-50 to-blue-100',
+          icon: <Users size={24} />,
+          color: 'text-primary-600',
+          bgGradient: 'from-primary-50 to-primary-100',
           trend: borrowers.length > 0 ? 12 : 0,
         },
         {
           label: 'Active Loans',
           value: activeLoanCount,
-          icon: <FileText size={28} />,
-          color: 'text-green-600',
-          bgGradient: 'from-green-50 to-green-100',
+          icon: <FileText size={24} />,
+          color: 'text-slate-dark',
+          bgGradient: 'from-slate-50 to-white',
           trend: activeLoanCount > 5 ? 8 : 0,
         },
         {
           label: 'Total Payments',
           value: payments.length,
-          icon: <CreditCard size={28} />,
-          color: 'text-purple-600',
-          bgGradient: 'from-purple-50 to-purple-100',
+          icon: <CreditCard size={24} />,
+          color: 'text-primary-600',
+          bgGradient: 'from-primary-50 to-slate-50',
           trend: payments.length > 10 ? 15 : 0,
         },
         {
           label: 'Total Collected',
-          value: `₱${totalPaid.toFixed(2)}`,
-          icon: <TrendingUp size={28} />,
-          color: 'text-orange-600',
-          bgGradient: 'from-orange-50 to-orange-100',
+          value: `PHP ${totalPaid.toFixed(2)}`,
+          icon: <TrendingUp size={24} />,
+          color: 'text-slate-dark',
+          bgGradient: 'from-slate-50 to-primary-50',
           trend: 22,
         },
       ]);
@@ -91,16 +90,16 @@ export const DashboardPage: React.FC = () => {
   };
 
   const formatCurrency = (value: string | number) => {
-    return `₱${parseFloat(value as string).toFixed(2)}`;
+    return `PHP ${parseFloat(value as string).toFixed(2)}`;
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <div className="flex items-center justify-center py-12">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full"
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+          className="h-12 w-12 rounded-full border-4 border-primary-100 border-t-primary-500"
         />
       </div>
     );
@@ -127,67 +126,53 @@ export const DashboardPage: React.FC = () => {
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Header */}
-      <motion.div variants={itemVariants} className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Dashboard
-        </h1>
-        <p className="text-gray-600 mt-2 text-lg">Welcome back! Here's your loan tracking overview</p>
+    <motion.div variants={containerVariants} initial="hidden" animate="visible">
+      <motion.div variants={itemVariants} className="mb-10">
+        <h1 className="gradient-text text-4xl font-bold md:text-5xl">Dashboard</h1>
+        <p className="mt-2 text-lg text-text-secondary">
+          Welcome back! Here&apos;s your loan tracking overview
+        </p>
       </motion.div>
 
-      {/* Stats Grid */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+        className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
       >
         {stats.map((stat, index) => (
           <motion.div key={index} variants={itemVariants}>
             <motion.div
-              whileHover={{ y: -8, scale: 1.02 }}
+              whileHover={{ y: -6, scale: 1.01 }}
               transition={{ duration: 0.2 }}
-              className={`bg-gradient-to-br ${stat.bgGradient} rounded-2xl p-6 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow cursor-default`}
+              className={`cursor-default rounded-2xl border border-border bg-gradient-to-br ${stat.bgGradient} p-6 shadow-sm transition-all hover:shadow-md`}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`${stat.color} p-3 rounded-xl bg-white shadow-md`}>
+              <div className="mb-4 flex items-start justify-between">
+                <div className={`${stat.color} rounded-xl bg-white p-3 shadow-sm`}>
                   {stat.icon}
                 </div>
                 {stat.trend && stat.trend > 0 && (
-                  <div className="flex items-center gap-1 text-green-600 font-semibold text-sm">
+                  <div className="flex items-center gap-1 text-sm font-semibold text-primary-600">
                     <ArrowUpRight size={16} />
                     {stat.trend}%
                   </div>
                 )}
               </div>
-              <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
-              <p className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">{stat.value}</p>
+              <p className="text-sm font-medium text-text-secondary">{stat.label}</p>
+              <p className="mt-2 text-3xl font-bold text-text-primary md:text-4xl">{stat.value}</p>
             </motion.div>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Recent Activity Section */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-      >
-        <Card title="Recent Payments" icon="💳">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <Card title="Recent Payments" icon={<CreditCard size={22} className="text-primary-600" />}>
           <Table
             columns={[
               {
                 key: 'amount',
                 label: 'Amount',
-                render: (value) => (
-                  <span className="font-semibold text-green-600">
-                    {formatCurrency(value)}
-                  </span>
-                ),
+                render: (value) => <span className="font-semibold text-primary-600">{formatCurrency(value)}</span>,
               },
               {
                 key: 'payment_date',
@@ -198,7 +183,7 @@ export const DashboardPage: React.FC = () => {
                 key: 'payment_method',
                 label: 'Method',
                 render: (value) => (
-                  <span className="capitalize px-3 py-1 bg-gray-100 rounded-full text-sm font-medium">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium capitalize text-slate-dark">
                     {value}
                   </span>
                 ),
@@ -210,7 +195,11 @@ export const DashboardPage: React.FC = () => {
           />
         </Card>
 
-        <Card title="Active Loans" icon="📄" subtitle="Highest remaining balance">
+        <Card
+          title="Active Loans"
+          icon={<FileText size={22} className="text-primary-600" />}
+          subtitle="Highest remaining balance"
+        >
           <Table
             columns={[
               {
@@ -221,11 +210,7 @@ export const DashboardPage: React.FC = () => {
               {
                 key: 'remaining_balance',
                 label: 'Balance',
-                render: (value) => (
-                  <span className="font-semibold text-blue-600">
-                    {formatCurrency(value)}
-                  </span>
-                ),
+                render: (value) => <span className="font-semibold text-primary-600">{formatCurrency(value)}</span>,
               },
               {
                 key: 'status',

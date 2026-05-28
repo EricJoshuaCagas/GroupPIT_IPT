@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { MainLayout } from './layouts/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { ChatWidget } from './components/ChatWidget';
 import {
   DashboardPage,
   BorrowersPage,
@@ -12,6 +13,7 @@ import {
   RegisterPage,
   ProfilePage,
   ActivationPage,
+  LandingPage,
 } from './pages';
 import './index.css';
 
@@ -22,12 +24,16 @@ function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route 
+        path="/" 
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} 
+      />
+      <Route 
         path="/login" 
-        element={isAuthenticated ? <Navigate to="/profile" replace /> : <LoginPage />} 
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
       />
       <Route 
         path="/register" 
-        element={isAuthenticated ? <Navigate to="/profile" replace /> : <RegisterPage />} 
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />} 
       />
       <Route 
         path="/activate/:uid/:token" 
@@ -36,7 +42,7 @@ function AppRoutes() {
 
       {/* Protected routes */}
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <MainLayout>
@@ -97,7 +103,7 @@ function AppRoutes() {
       />
 
       {/* Redirect unknown routes */}
-      <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
     </Routes>
   );
 }
@@ -107,6 +113,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <ChatWidget />
       </AuthProvider>
     </BrowserRouter>
   );

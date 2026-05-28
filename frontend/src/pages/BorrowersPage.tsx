@@ -111,11 +111,11 @@ export const BorrowersPage: React.FC = () => {
     <motion.div variants={containerVariants} initial="hidden" animate="visible">
       <motion.div variants={itemVariants} className="flex justify-between items-center mb-12">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
-            <Users className="text-blue-600" size={36} />
+          <h1 className="text-4xl font-bold text-text-primary flex items-center gap-3">
+            <Users className="text-primary-600" size={36} />
             Borrowers
           </h1>
-          <p className="text-gray-600 mt-2">Manage and track all borrower information</p>
+          <p className="text-text-secondary mt-2">Manage and track all borrower information</p>
         </div>
         <Button variant="primary" onClick={() => handleOpenModal()}>
           <Plus size={20} />
@@ -130,13 +130,13 @@ export const BorrowersPage: React.FC = () => {
               {
                 key: 'full_name',
                 label: 'Name',
-                render: (value) => <span className="font-semibold text-gray-900">{value}</span>,
+                render: (value) => <span className="font-semibold text-text-primary">{value}</span>,
               },
               {
                 key: 'email',
                 label: 'Email',
                 render: (value) => (
-                  <span className="text-blue-600 hover:underline cursor-pointer">{value}</span>
+                  <span className="text-primary-600 hover:underline cursor-pointer">{value}</span>
                 ),
               },
               {
@@ -147,7 +147,7 @@ export const BorrowersPage: React.FC = () => {
               {
                 key: 'address',
                 label: 'Address',
-                render: (value) => <span className="text-gray-600 text-sm">{value}</span>,
+                render: (value) => <span className="text-text-secondary text-sm">{value}</span>,
               },
               {
                 key: 'id',
@@ -158,7 +158,7 @@ export const BorrowersPage: React.FC = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleOpenModal(row)}
-                      className="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="text-primary-600 hover:text-primary-700 p-2 hover:bg-primary-50 rounded-lg transition-colors"
                     >
                       <Edit2 size={18} />
                     </motion.button>

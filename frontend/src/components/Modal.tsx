@@ -33,7 +33,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm"
           />
           <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
             <motion.div
@@ -41,21 +41,21 @@ export const Modal: React.FC<ModalProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+              className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
             >
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+              <div className="flex items-center justify-between border-b border-border p-6">
+                <h2 className="text-2xl font-bold text-text-primary">{title}</h2>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="rounded-lg p-1 text-text-secondary transition-colors hover:bg-slate-100 hover:text-slate-dark"
                 >
                   <X size={24} />
                 </motion.button>
               </div>
               <div className="p-6 max-h-[60vh] overflow-y-auto">{children}</div>
-              <div className="flex items-center gap-3 p-6 border-t border-gray-100">
+              <div className="flex items-center gap-3 border-t border-border bg-slate-50 p-6">
                 <Button variant="secondary" onClick={onClose} className="flex-1">
                   {cancelText}
                 </Button>

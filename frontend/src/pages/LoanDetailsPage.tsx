@@ -56,13 +56,14 @@ export const LoanDetailsPage: React.FC = () => {
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
     if (!formData.amount) newErrors.amount = 'Amount is required';
-    else if (parseFloat(formData.amount) <= 0)
-      newErrors.amount = 'Amount must be greater than 0';
-    else if (parseFloat(formData.amount) > parseFloat(loan!.remaining_balance))
-      newErrors.amount = `Amount cannot exceed remaining balance of ₱${parseFloat(loan!.remaining_balance).toFixed(2)}`;
+    else if (parseFloat(formData.amount) <= 0) newErrors.amount = 'Amount must be greater than 0';
+    else if (parseFloat(formData.amount) > parseFloat(loan!.remaining_balance)) {
+      newErrors.amount = `Amount cannot exceed remaining balance of PHP ${parseFloat(
+        loan!.remaining_balance
+      ).toFixed(2)}`;
+    }
     if (!formData.payment_date) newErrors.payment_date = 'Payment date is required';
-    if (!formData.payment_method)
-      newErrors.payment_method = 'Payment method is required';
+    if (!formData.payment_method) newErrors.payment_method = 'Payment method is required';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -87,9 +88,7 @@ export const LoanDetailsPage: React.FC = () => {
         const apiErrors = error.response.data;
         const errorMessages: Record<string, string> = {};
         Object.keys(apiErrors).forEach((key) => {
-          errorMessages[key] = Array.isArray(apiErrors[key])
-            ? apiErrors[key][0]
-            : apiErrors[key];
+          errorMessages[key] = Array.isArray(apiErrors[key]) ? apiErrors[key][0] : apiErrors[key];
         });
         setErrors(errorMessages);
       }
@@ -99,23 +98,19 @@ export const LoanDetailsPage: React.FC = () => {
   };
 
   const formatCurrency = (value: string | number) => {
-    return `₱${parseFloat(value as string).toFixed(2)}`;
+    return `PHP ${parseFloat(value as string).toFixed(2)}`;
   };
 
   if (loading) {
     return (
-      <motion.div 
-        className="flex justify-center items-center py-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
+      <motion.div className="flex items-center justify-center py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <div className="text-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1 }}
-            className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-4"
+            className="mx-auto mb-4 h-8 w-8 rounded-full border-4 border-primary-100 border-t-primary-500"
           />
-          <p className="text-gray-500">Loading loan details...</p>
+          <p className="text-text-secondary">Loading loan details...</p>
         </div>
       </motion.div>
     );
@@ -123,26 +118,44 @@ export const LoanDetailsPage: React.FC = () => {
 
   if (!loan) {
     return (
-      <motion.div
-        className="flex justify-center items-center py-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <p className="text-gray-500">Loan not found</p>
+      <motion.div className="flex items-center justify-center py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <p className="text-text-secondary">Loan not found</p>
       </motion.div>
     );
   }
 
+  const detailCards = [
+    {
+      label: 'Principal',
+      value: formatCurrency(loan.principal_amount),
+      icon: DollarSign,
+      wrapperClass: 'bg-primary-100 text-primary-600',
+    },
+    {
+      label: 'Total Payable',
+      value: formatCurrency(loan.total_payable),
+      icon: TrendingUp,
+      wrapperClass: 'bg-slate-100 text-slate-dark',
+    },
+    {
+      label: 'Total Paid',
+      value: formatCurrency(loan.total_paid),
+      icon: DollarSign,
+      wrapperClass: 'bg-primary-50 text-primary-600',
+    },
+    {
+      label: 'Interest Rate',
+      value: `${loan.interest_rate}%`,
+      icon: Percent,
+      wrapperClass: 'bg-slate-100 text-slate-dark',
+    },
+  ];
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
       <motion.button
         onClick={() => navigate('/loans')}
-        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-8 hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors"
+        className="mb-8 flex items-center gap-2 rounded-lg px-3 py-2 text-primary-600 transition-colors hover:bg-primary-50 hover:text-primary-700"
         whileHover={{ x: -5 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -150,42 +163,30 @@ export const LoanDetailsPage: React.FC = () => {
         Back to Loans
       </motion.button>
 
-      {/* Main Summary Cards */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+      <motion.div
+        className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
-        >
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.15 }}>
           <Card>
             <div className="text-center">
-              <motion.div
-                className="flex justify-center mb-3"
-                whileHover={{ scale: 1.1 }}
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex items-center justify-center">
-                  <DollarSign className="text-blue-600" size={24} />
+              <motion.div className="mb-3 flex justify-center" whileHover={{ scale: 1.1 }}>
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary-100 to-primary-50">
+                  <DollarSign className="text-primary-600" size={24} />
                 </div>
               </motion.div>
-              <p className="text-gray-500 text-sm mb-1">Borrower</p>
-              <h3 className="text-xl font-bold text-gray-900">{loan.borrower_name}</h3>
+              <p className="mb-1 text-sm text-text-secondary">Borrower</p>
+              <h3 className="text-xl font-bold text-text-primary">{loan.borrower_name}</h3>
             </div>
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.2 }}>
           <Card>
             <div className="text-center">
-              <p className="text-gray-500 text-sm mb-3">Status</p>
+              <p className="mb-3 text-sm text-text-secondary">Status</p>
               <div className="flex justify-center">
                 <StatusBadge status={loan.status as any}>
                   {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
@@ -195,43 +196,28 @@ export const LoanDetailsPage: React.FC = () => {
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.25 }}
-        >
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.25 }}>
           <Card>
             <div className="text-center">
-              <motion.div
-                className="flex justify-center mb-3"
-                whileHover={{ scale: 1.1 }}
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="text-red-600" size={24} />
+              <motion.div className="mb-3 flex justify-center" whileHover={{ scale: 1.1 }}>
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-50">
+                  <TrendingUp className="text-slate-dark" size={24} />
                 </div>
               </motion.div>
-              <p className="text-gray-500 text-sm mb-1">Remaining Balance</p>
-              <h3 className="text-xl font-bold text-gray-900">
-                {formatCurrency(loan.remaining_balance)}
-              </h3>
+              <p className="mb-1 text-sm text-text-secondary">Remaining Balance</p>
+              <h3 className="text-xl font-bold text-text-primary">{formatCurrency(loan.remaining_balance)}</h3>
             </div>
           </Card>
         </motion.div>
       </motion.div>
 
-      {/* Loan Details Grid */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+      <motion.div
+        className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        {[
-          { label: 'Principal', value: formatCurrency(loan.principal_amount), icon: DollarSign, color: 'blue' },
-          { label: 'Total Payable', value: formatCurrency(loan.total_payable), icon: TrendingUp, color: 'purple' },
-          { label: 'Total Paid', value: formatCurrency(loan.total_paid), icon: DollarSign, color: 'green' },
-          { label: 'Interest Rate', value: `${loan.interest_rate}%`, icon: Percent, color: 'amber' },
-        ].map((item, idx) => (
+        {detailCards.map((item, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 10 }}
@@ -239,30 +225,25 @@ export const LoanDetailsPage: React.FC = () => {
             transition={{ duration: 0.3, delay: 0.25 + idx * 0.05 }}
           >
             <Card>
-              <div className="flex items-center gap-3 mb-2">
-                <div className={`w-10 h-10 bg-${item.color}-100 rounded-lg flex items-center justify-center`}>
-                  <item.icon className={`text-${item.color}-600`} size={20} />
+              <div className="mb-2 flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${item.wrapperClass}`}>
+                  <item.icon size={20} />
                 </div>
-                <p className="text-gray-500 text-sm">{item.label}</p>
+                <p className="text-sm text-text-secondary">{item.label}</p>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{item.value}</p>
+              <p className="text-2xl font-bold text-text-primary">{item.value}</p>
             </Card>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Payment History */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.3 }}
       >
         <Card title="Payment History">
-          <motion.div 
-            className="mb-4"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+          <motion.div className="mb-4" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button variant="primary" onClick={handleOpenModal}>
               <Plus size={20} className="mr-2" />
               Record Payment
@@ -274,12 +255,12 @@ export const LoanDetailsPage: React.FC = () => {
               {
                 key: 'amount',
                 label: 'Amount',
-                render: (value) => <span className="font-semibold">{formatCurrency(value)}</span>,
+                render: (value) => <span className="font-semibold text-primary-600">{formatCurrency(value)}</span>,
               },
-              { 
-                key: 'payment_date', 
+              {
+                key: 'payment_date',
                 label: 'Date',
-                render: (value) => new Date(value).toLocaleDateString()
+                render: (value) => new Date(value).toLocaleDateString(),
               },
               { key: 'payment_method', label: 'Method' },
               { key: 'notes', label: 'Notes' },
@@ -306,8 +287,8 @@ export const LoanDetailsPage: React.FC = () => {
           className="space-y-4"
         >
           {errors.general && (
-            <motion.div 
-              className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg"
+            <motion.div
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -327,7 +308,7 @@ export const LoanDetailsPage: React.FC = () => {
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               error={errors.amount}
-              helperText={`Remaining Balance: ${formatCurrency(loan.remaining_balance)} • Cannot exceed this amount`}
+              helperText={`Remaining Balance: ${formatCurrency(loan.remaining_balance)} | Cannot exceed this amount`}
             />
           </motion.div>
 
@@ -350,24 +331,20 @@ export const LoanDetailsPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.15 }}
           >
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Payment Method
-            </label>
+            <label className="mb-2 block text-sm font-semibold text-slate-dark">Payment Method</label>
             <select
               value={formData.payment_method}
-              onChange={(e) =>
-                setFormData({ ...formData, payment_method: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
               className={`input-field transition-all duration-200 ${errors.payment_method ? 'border-red-500 ring-red-100' : ''}`}
             >
-              <option value="cash">💵 Cash</option>
-              <option value="check">🏦 Check</option>
-              <option value="bank_transfer">💳 Bank Transfer</option>
-              <option value="credit_card">💰 Credit Card</option>
+              <option value="cash">Cash</option>
+              <option value="check">Check</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="credit_card">Credit Card</option>
             </select>
             {errors.payment_method && (
-              <motion.p 
-                className="text-red-500 text-sm mt-1"
+              <motion.p
+                className="mt-1 text-sm text-red-500"
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
               >
@@ -381,13 +358,11 @@ export const LoanDetailsPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Notes (Optional)
-            </label>
+            <label className="mb-2 block text-sm font-semibold text-slate-dark">Notes (Optional)</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="input-field resize-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+              className="input-field resize-none"
               rows={3}
               placeholder="Add any payment notes..."
             />

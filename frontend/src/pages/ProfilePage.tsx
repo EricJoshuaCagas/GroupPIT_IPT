@@ -68,7 +68,6 @@ export const ProfilePage: React.FC = () => {
 
       setSuccess('Profile updated successfully');
       setIsEditing(false);
-      // Optionally, refetch user data or update context
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
@@ -83,37 +82,32 @@ export const ProfilePage: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-primary-500"></div>
+          <p className="mt-4 text-text-secondary">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-8">
-            <div className="flex justify-between items-center mb-8">
-              <div className="flex items-center gap-6">
-                {/* Profile Image */}
+    <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl">
+        <div className="rounded-2xl border border-border bg-card shadow-sm">
+          <div className="px-6 py-8 md:px-8">
+            <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-center">
+              <div className="flex items-center gap-5">
                 <div className="flex flex-col items-center">
                   {user.profile_image ? (
                     <img
                       src={user.profile_image}
                       alt={`${user.first_name} ${user.last_name}`}
-                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-600 shadow-lg"
+                      className="h-28 w-28 rounded-full border-4 border-primary-200 object-cover shadow-sm"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center border-4 border-blue-600 shadow-lg">
-                      <svg
-                        className="w-16 h-16 text-gray-600"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                    <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-primary-200 bg-slate-100 shadow-sm">
+                      <svg className="h-14 w-14 text-text-secondary" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
                       </svg>
                     </div>
@@ -121,146 +115,101 @@ export const ProfilePage: React.FC = () => {
                 </div>
 
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">
+                  <h1 className="text-3xl font-bold text-text-primary">
                     {user.first_name} {user.last_name}
                   </h1>
-                  <p className="text-gray-600 mt-1">{user.email}</p>
+                  <p className="mt-1 text-text-secondary">{user.email}</p>
                   {user.is_active ? (
-                    <span className="inline-block mt-2 px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-full">
-                      ✓ Activated
+                    <span className="mt-2 inline-block rounded-full bg-primary-100 px-3 py-1 text-sm font-semibold text-primary-700">
+                      Active
                     </span>
                   ) : (
-                    <span className="inline-block mt-2 px-3 py-1 text-sm font-semibold text-white bg-yellow-500 rounded-full">
-                      ⏳ Pending Activation
+                    <span className="mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-dark">
+                      Pending Activation
                     </span>
                   )}
                 </div>
               </div>
 
-              <Button
-                onClick={handleLogout}
-                variant="secondary"
-              >
+              <Button onClick={handleLogout} variant="secondary">
                 Logout
               </Button>
             </div>
 
             {error && (
-              <div className="rounded-md bg-red-50 p-4 mb-6">
-                <p className="text-sm font-medium text-red-800">{error}</p>
+              <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+                <p className="text-sm font-medium text-red-700">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="rounded-md bg-green-50 p-4 mb-6">
-                <p className="text-sm font-medium text-green-800">{success}</p>
+              <div className="mb-6 rounded-lg border border-primary-200 bg-primary-50 p-4">
+                <p className="text-sm font-medium text-primary-700">{success}</p>
               </div>
             )}
 
-            <div className="space-y-6">
-              {/* Email (read-only) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
-                <Input
-                  type="email"
-                  value={user.email}
-                  disabled
-                  className="bg-gray-100"
-                />
-              </div>
+            <div className="space-y-4">
+              <Input type="email" label="Email Address" value={user.email} disabled className="bg-slate-50" />
 
-              {/* First Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name
-                </label>
-                <Input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
+              <Input
+                type="text"
+                name="first_name"
+                label="First Name"
+                value={formData.first_name}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
 
-              {/* Last Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name
-                </label>
-                <Input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
+              <Input
+                type="text"
+                name="last_name"
+                label="Last Name"
+                value={formData.last_name}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
 
-              {/* Age */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Age
-                </label>
-                <Input
-                  type="number"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
+              <Input
+                type="number"
+                name="age"
+                label="Age"
+                value={formData.age}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
 
-              {/* Birthday */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Birthday
-                </label>
-                <Input
-                  type="date"
-                  name="birthday"
-                  value={formData.birthday}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
+              <Input
+                type="date"
+                name="birthday"
+                label="Birthday"
+                value={formData.birthday}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
 
-              {/* Address */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Address
-                </label>
+                <label className="mb-2 block text-sm font-semibold text-slate-dark">Address</label>
                 <textarea
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   disabled={!isEditing}
                   rows={4}
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                    !isEditing ? 'bg-gray-100 cursor-not-allowed' : ''
+                  className={`w-full rounded-lg border border-border px-4 py-3 text-text-primary placeholder:text-text-secondary focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 ${
+                    !isEditing ? 'cursor-not-allowed bg-slate-50 text-text-secondary' : 'bg-white'
                   }`}
                 />
               </div>
 
-              {/* Account Created */}
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
-                  Account ID: {user.id}
-                </p>
+              <div className="border-t border-border pt-4">
+                <p className="text-sm text-text-secondary">Account ID: {user.id}</p>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-wrap gap-3">
               {isEditing ? (
                 <>
-                  <Button
-                    onClick={handleSave}
-                    disabled={loading}
-                    variant="primary"
-                  >
+                  <Button onClick={handleSave} disabled={loading} variant="primary">
                     {loading ? 'Saving...' : 'Save Changes'}
                   </Button>
                   <Button
@@ -281,10 +230,7 @@ export const ProfilePage: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  variant="primary"
-                >
+                <Button onClick={() => setIsEditing(true)} variant="primary">
                   Edit Profile
                 </Button>
               )}
@@ -292,44 +238,43 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Links */}
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <a
             href="/borrowers"
-            className="relative group block w-full overflow-hidden rounded-lg border border-gray-200 p-4 transition hover:shadow-lg"
+            className="group relative block w-full overflow-hidden rounded-xl border border-border bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-sm"
           >
-            <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="sm:flex sm:items-center sm:justify-between">
               <div>
-                <h3 className="font-bold text-gray-900">Borrowers</h3>
-                <p className="mt-1 text-sm text-gray-600">View all borrowers</p>
+                <h3 className="font-bold text-text-primary">Borrowers</h3>
+                <p className="mt-1 text-sm text-text-secondary">View all borrowers</p>
               </div>
-              <span className="absolute inset-y-0 right-0 translate-x-full transition group-hover:translate-x-0 group-hover:bg-blue-600 w-1 bg-blue-600 opacity-0 group-hover:opacity-100"></span>
+              <span className="absolute inset-y-0 right-0 w-1 translate-x-full bg-primary-500 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"></span>
             </div>
           </a>
 
           <a
             href="/loans"
-            className="relative group block w-full overflow-hidden rounded-lg border border-gray-200 p-4 transition hover:shadow-lg"
+            className="group relative block w-full overflow-hidden rounded-xl border border-border bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-sm"
           >
-            <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="sm:flex sm:items-center sm:justify-between">
               <div>
-                <h3 className="font-bold text-gray-900">Loans</h3>
-                <p className="mt-1 text-sm text-gray-600">View all loans</p>
+                <h3 className="font-bold text-text-primary">Loans</h3>
+                <p className="mt-1 text-sm text-text-secondary">View all loans</p>
               </div>
-              <span className="absolute inset-y-0 right-0 translate-x-full transition group-hover:translate-x-0 group-hover:bg-blue-600 w-1 bg-blue-600 opacity-0 group-hover:opacity-100"></span>
+              <span className="absolute inset-y-0 right-0 w-1 translate-x-full bg-primary-500 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"></span>
             </div>
           </a>
 
           <a
             href="/payments"
-            className="relative group block w-full overflow-hidden rounded-lg border border-gray-200 p-4 transition hover:shadow-lg"
+            className="group relative block w-full overflow-hidden rounded-xl border border-border bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-sm"
           >
-            <div className="sm:flex sm:justify-between sm:items-center">
+            <div className="sm:flex sm:items-center sm:justify-between">
               <div>
-                <h3 className="font-bold text-gray-900">Payments</h3>
-                <p className="mt-1 text-sm text-gray-600">View all payments</p>
+                <h3 className="font-bold text-text-primary">Payments</h3>
+                <p className="mt-1 text-sm text-text-secondary">View all payments</p>
               </div>
-              <span className="absolute inset-y-0 right-0 translate-x-full transition group-hover:translate-x-0 group-hover:bg-blue-600 w-1 bg-blue-600 opacity-0 group-hover:opacity-100"></span>
+              <span className="absolute inset-y-0 right-0 w-1 translate-x-full bg-primary-500 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"></span>
             </div>
           </a>
         </div>

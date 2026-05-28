@@ -5,3 +5,4 @@ export { Card } from './Card';
 export { Table } from './Table';
 export { StatusBadge } from './StatusBadge';
 export { ProtectedRoute } from './ProtectedRoute';
+export { ChatWidget } from './ChatWidget';

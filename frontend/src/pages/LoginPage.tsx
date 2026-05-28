@@ -14,7 +14,6 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Show success message from registration
   useEffect(() => {
     const state = location.state as any;
     if (state?.message) {
@@ -27,7 +26,6 @@ export const LoginPage: React.FC = () => {
     setError('');
     setLoading(true);
 
-    // Validation
     if (!email || !password) {
       setError('Please fill in all fields');
       setLoading(false);
@@ -45,8 +43,7 @@ export const LoginPage: React.FC = () => {
       navigate('/profile');
     } catch (err: any) {
       const errorMsg = err.message || 'Login failed. Please check your credentials.';
-      
-      // Check if account is not activated
+
       if (errorMsg.includes('is_active') || errorMsg.includes('not active')) {
         setError('Your account is not activated. Please check your email for the activation link.');
       } else {
@@ -58,78 +55,68 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-              create a new account
-            </Link>
-          </p>
-        </div>
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-[70vh] w-full max-w-md items-center">
+        <div className="w-full rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <div>
+            <h2 className="text-center text-3xl font-bold tracking-tight text-text-primary">
+              Sign in to your account
+            </h2>
+            <p className="mt-2 text-center text-sm text-text-secondary">
+              Or{' '}
+              <Link to="/register" className="font-medium text-primary-600 transition-colors hover:text-primary-700">
+                create a new account
+              </Link>
+            </p>
+          </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm font-medium text-red-800">{error}</p>
-            </div>
-          )}
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                <p className="text-sm font-medium text-red-700">{error}</p>
+              </div>
+            )}
 
-          {successMessage && (
-            <div className="rounded-md bg-green-50 p-4">
-              <p className="text-sm font-medium text-green-800">{successMessage}</p>
-            </div>
-          )}
+            {successMessage && (
+              <div className="rounded-lg border border-primary-200 bg-primary-50 p-4">
+                <p className="text-sm font-medium text-primary-700">{successMessage}</p>
+              </div>
+            )}
 
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email address
-              </label>
+            <div className="space-y-2">
               <Input
                 id="email"
+                label="Email address"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
               />
-            </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
               <Input
                 id="password"
+                label="Password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="********"
                 required
               />
             </div>
-          </div>
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full"
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </Button>
-        </form>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
 
-        <p className="text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-            Sign up here
-          </Link>
-        </p>
+          <p className="mt-6 text-center text-sm text-text-secondary">
+            Don&apos;t have an account?{' '}
+            <Link to="/register" className="font-medium text-primary-600 transition-colors hover:text-primary-700">
+              Sign up here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

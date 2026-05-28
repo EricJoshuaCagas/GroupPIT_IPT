@@ -21,7 +21,7 @@ export const Card: React.FC<CardProps> = ({
   const cardVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    hover: hoverable ? { y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' } : {},
+    hover: hoverable ? { y: -3, boxShadow: '0 16px 30px rgba(15, 23, 42, 0.12)' } : {},
   };
 
   return (
@@ -31,18 +31,18 @@ export const Card: React.FC<CardProps> = ({
       animate="animate"
       whileHover="hover"
       transition={{ duration: 0.3 }}
-      className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden ${
-        hoverable ? 'cursor-pointer' : ''
+      className={`bg-card rounded-2xl border border-border shadow-sm transition-all duration-300 overflow-hidden ${
+        hoverable ? 'cursor-pointer hover:border-primary-200 hover:shadow-md' : ''
       } ${className}`}
     >
       <div className="p-6 md:p-8">
         {title && (
-          <div className="mb-6 pb-6 border-b border-gray-100">
+          <div className="mb-6 border-b border-border pb-6">
             <div className="flex items-center gap-3 mb-2">
               {icon && <span className="text-2xl">{icon}</span>}
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900">{title}</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-text-primary">{title}</h3>
             </div>
-            {subtitle && <p className="text-sm text-gray-500 mt-2">{subtitle}</p>}
+            {subtitle && <p className="mt-2 text-sm text-text-secondary">{subtitle}</p>}
           </div>
         )}
         {children}
