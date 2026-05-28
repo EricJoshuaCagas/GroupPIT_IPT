@@ -11,6 +11,10 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
+# SECURE_PROXY_SSL_HEADER is required for Django to know it's being served over HTTPS
+# behind Railway's SSL-terminating reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -192,7 +196,7 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': config('SEND_ACTIVATION_EMAIL', default=False, cast=bool),
-    'ACTIVATION_URL': 'http://localhost:3002/activate/{uid}/{token}/',
+    'ACTIVATION_URL': config('FRONTEND_ACTIVATION_URL', default='http://localhost:3000/activate/{uid}/{token}'),
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}/',
     'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}/',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,

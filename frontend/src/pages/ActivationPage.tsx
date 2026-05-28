@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/Button';
+import { API_BASE_URL } from '../services/api';
 
 export const ActivationPage: React.FC = () => {
   const { uid, token } = useParams<{ uid: string; token: string }>();
@@ -17,7 +18,7 @@ export const ActivationPage: React.FC = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:8000/api/auth/activate/${uid}/${token}/`, {
+        const response = await fetch(`${API_BASE_URL}/auth/activate/${uid}/${token}/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

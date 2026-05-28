@@ -50,7 +50,8 @@ def register_view(request):
                 
                 # Build activation link - point to frontend activation page
                 # The frontend will then call the API endpoint
-                activation_link = f"http://localhost:3000/activate/{uid}/{token}/"
+                activation_base_url = settings.DJOSER.get('ACTIVATION_URL', 'http://localhost:3000/activate/{uid}/{token}')
+                activation_link = activation_base_url.format(uid=uid, token=token)
                 print(f"[REGISTER] Activation link: {activation_link}")
                 
                 # Create HTML email template with LoanTracker theme
