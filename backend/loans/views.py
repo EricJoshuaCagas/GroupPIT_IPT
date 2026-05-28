@@ -397,8 +397,9 @@ def logout_view(request):
     return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
 
 
-OLLAMA_URL = 'http://localhost:11434/api/generate'
-OLLAMA_MODEL = 'qwen2.5:0.5b'
+from decouple import config
+OLLAMA_URL = config('OLLAMA_URL', default='http://localhost:11434/api/generate')
+OLLAMA_MODEL = config('OLLAMA_MODEL', default='qwen2.5:0.5b')
 MAX_CONTEXT_CHARS = 8000
 
 

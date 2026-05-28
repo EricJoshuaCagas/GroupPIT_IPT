@@ -153,8 +153,8 @@ SIMPLE_JWT = {
 # Custom User Model
 AUTH_USER_MODEL = 'loans.User'
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',') if config('CORS_ALLOWED_ORIGINS', default='') else [
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002',
